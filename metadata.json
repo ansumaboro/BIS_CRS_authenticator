@@ -1,0 +1,5 @@
+{
+  "name": "BIS Authenticator",
+  "description": "Verify product authenticity by scanning labels for BIS, IS, and R-numbers. Explains standards and suggests similar verified products.",
+  "requestFramePermissions": ["camera"]
+}
