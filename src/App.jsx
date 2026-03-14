@@ -6,18 +6,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { GoogleGenAI, Type } from "@google/genai";
-import { 
-  Camera, 
-  Upload, 
-  ShieldCheck, 
-  ShieldAlert, 
-  Info, 
-  Search, 
-  Package, 
-  MapPin, 
-  Globe, 
-  Calendar, 
-  Tag, 
+import {
+  Camera,
+  Upload,
+  ShieldCheck,
+  ShieldAlert,
+  Info,
+  Search,
+  Package,
+  MapPin,
+  Globe,
+  Calendar,
+  Tag,
   CheckCircle2,
   AlertCircle,
   Loader2,
@@ -158,19 +158,19 @@ export default function App() {
   };
 
   const explainISNumber = async (isNumber) => {
-  setIsExplaining(true); // Start loader
-  try {
-    const response = await genAI.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: `Explain what the Indian Standard ${isNumber} says, what it is for, and its key standards in a concise manner.`
-    });
-    setIsExplanation(response.text);
-  } catch (err) {
-    console.error("Error explaining IS number:", err);
-  } finally {
-    setIsExplaining(false); // Stop loader
-  }
-};
+    setIsExplaining(true); // Start loader
+    try {
+      const response = await genAI.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: `Explain what the Indian Standard ${isNumber} says, what it is for, and its key standards in a concise manner.`
+      });
+      setIsExplanation(response.text);
+    } catch (err) {
+      console.error("Error explaining IS number:", err);
+    } finally {
+      setIsExplaining(false); // Stop loader
+    }
+  };
 
   const findSimilarProducts = async (productName, brand) => {
     setIsSearchingAlternatives(true);
@@ -178,27 +178,30 @@ export default function App() {
       const response = await genAI.models.generateContent({
         model: "gemini-3-flash-preview",
         contents: `Find 3 similar products to "${brand} ${productName}" that are also BIS certified (have an R-number). For each, provide the name, brand, and a placeholder R-number. Format as a JSON array of objects with keys: name, brand, rNumber, url.`,
-        config: { 
-          tools: [{ googleSearch: {} }],
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                name: { type: Type.STRING },
-                brand: { type: Type.STRING },
-                rNumber: { type: Type.STRING },
-                url: { type: Type.STRING }
-              }
-            }
-          }
+        // config: { 
+        //   tools: [{ googleSearch: {} }],
+        //   responseMimeType: "application/json",
+        //   responseSchema: {
+        //     type: Type.ARRAY,
+        //     items: {
+        //       type: Type.OBJECT,
+        //       properties: {
+        //         name: { type: Type.STRING },
+        //         brand: { type: Type.STRING },
+        //         rNumber: { type: Type.STRING },
+        //         url: { type: Type.STRING }
+        //       }
+        //     }
+        //   }
+        // }
+        config: {
+          responseMimeType: "application/json"
         }
       });
       setSimilarProducts(JSON.parse(response.text));
     } catch (err) {
       console.error("Error finding similar products:", err);
-    }finally {
+    } finally {
       setIsSearchingAlternatives(false); // Stop loader
     }
   };
@@ -230,7 +233,7 @@ export default function App() {
           </div>
         </div>
         {step === 'results' && (
-          <button 
+          <button
             onClick={reset}
             className="text-sm font-medium text-emerald-600 hover:text-emerald-700 transition-colors flex items-center gap-1"
           >
@@ -242,7 +245,7 @@ export default function App() {
       <main className="max-w-4xl mx-auto p-6">
         <AnimatePresence mode="wait">
           {step === 'upload' ? (
-            <motion.div 
+            <motion.div
               key="upload"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -257,11 +260,11 @@ export default function App() {
               </div>
 
               {/* Manual Search Bar */}
-              <form 
+              <form
                 onSubmit={handleManualSearch}
                 className="w-full max-w-lg mb-8 relative group"
               >
-                <input 
+                <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -269,7 +272,7 @@ export default function App() {
                   className="w-full bg-white border-2 border-gray-100 rounded-2xl px-6 py-4 pl-14 focus:border-emerald-500 focus:ring-0 transition-all shadow-sm group-hover:shadow-md outline-none"
                 />
                 <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 group-focus-within:text-emerald-500 transition-colors" />
-                <button 
+                <button
                   type="submit"
                   className="absolute right-3 top-1/2 -translate-y-1/2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-200"
                 >
@@ -283,7 +286,7 @@ export default function App() {
                 <div className="h-px bg-gray-200 flex-1"></div>
               </div>
 
-              <div 
+              <div
                 onClick={() => fileInputRef.current?.click()}
                 className="group relative w-full max-w-lg aspect-[4/3] bg-white rounded-3xl border-2 border-dashed border-gray-200 hover:border-emerald-500 transition-all cursor-pointer flex flex-col items-center justify-center overflow-hidden shadow-sm hover:shadow-xl hover:shadow-emerald-50"
               >
@@ -296,11 +299,11 @@ export default function App() {
                     <p className="text-sm text-gray-400">Supports JPG, PNG (Max 50MB)</p>
                   </div>
                 </div>
-                <input 
-                  type="file" 
-                  ref={fileInputRef} 
-                  className="hidden" 
-                  accept="image/*" 
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  className="hidden"
+                  accept="image/*"
                   onChange={handleImageUpload}
                 />
               </div>
@@ -324,18 +327,17 @@ export default function App() {
               </div>
             </motion.div>
           ) : (
-            <motion.div 
+            <motion.div
               key="results"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="space-y-8 pb-20"
             >
               {/* Status Banner */}
-              <div className={`p-6 rounded-3xl flex items-center gap-4 ${
-                isProcessing ? 'bg-blue-50 text-blue-700' :
-                error ? 'bg-red-50 text-red-700' :
-                'bg-emerald-50 text-emerald-700'
-              }`}>
+              <div className={`p-6 rounded-3xl flex items-center gap-4 ${isProcessing ? 'bg-blue-50 text-blue-700' :
+                  error ? 'bg-red-50 text-red-700' :
+                    'bg-emerald-50 text-emerald-700'
+                }`}>
                 {isProcessing ? (
                   <Loader2 className="w-8 h-8 animate-spin" />
                 ) : error ? (
@@ -348,8 +350,8 @@ export default function App() {
                     {isProcessing ? "Analyzing Label..." : error ? "Verification Failed" : "Product Authenticated"}
                   </h3>
                   <p className="text-sm opacity-80">
-                    {isProcessing ? "Extracting BIS details and checking database..." : 
-                     error ? error : "This product is registered with the Bureau of Indian Standards."}
+                    {isProcessing ? "Extracting BIS details and checking database..." :
+                      error ? error : "This product is registered with the Bureau of Indian Standards."}
                   </p>
                 </div>
               </div>
@@ -359,9 +361,9 @@ export default function App() {
                 <div className="md:col-span-1 space-y-6">
                   <div className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100">
                     <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Scanned Label</p>
-                    <img 
-                      src={image || undefined} 
-                      alt="Product Label" 
+                    <img
+                      src={image || undefined}
+                      alt="Product Label"
                       className="w-full rounded-2xl aspect-square object-cover"
                       referrerPolicy="no-referrer"
                     />
@@ -389,7 +391,7 @@ export default function App() {
                 {/* Right Column: DB Details & Explanation */}
                 <div className="md:col-span-2 space-y-6">
                   {dbProduct && (
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden"
@@ -405,7 +407,7 @@ export default function App() {
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="p-6 grid grid-cols-2 gap-6">
                         <div className="space-y-1">
                           <p className="text-[10px] font-bold uppercase text-gray-400 flex items-center gap-1">
@@ -421,16 +423,16 @@ export default function App() {
                           <p className="text-sm font-semibold">Until {dbProduct.validity}</p>
                           <p className="text-xs text-gray-500">Granted: {dbProduct.license_grant_date}</p>
                         </div>
-                        <div className="col-span-2 pt-4 border-t border-gray-50">
+                        {/* <div className="col-span-2 pt-4 border-t border-gray-50">
                           <p className="text-[10px] font-bold uppercase text-gray-400 mb-1">Scope of License</p>
                           <p className="text-sm text-gray-600 leading-relaxed">{dbProduct.scope_of_license}</p>
-                        </div>
+                        </div> */}
                       </div>
                     </motion.div>
                   )}
 
                   {(isExplaining || isExplanation) && (
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100"
@@ -464,13 +466,13 @@ export default function App() {
                           </div>
                         ) : (
                           /* Rendered Markdown from API */
-                          <ReactMarkdown 
+                          <ReactMarkdown
                             components={{
-                              h3: ({node, ...props}) => <h3 className="text-gray-900 font-bold mt-6 mb-3 flex items-center gap-2 border-l-4 border-emerald-500 pl-3" {...props} />,
-                              hr: ({node, ...props}) => <hr className="my-8 border-gray-100" {...props} />,
-                              strong: ({node, ...props}) => <strong className="text-emerald-700 font-semibold" {...props} />,
-                              ul: ({node, ...props}) => <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 list-none p-0" {...props} />,
-                              li: ({node, ...props}) => (
+                              h3: ({ node, ...props }) => <h3 className="text-gray-900 font-bold mt-6 mb-3 flex items-center gap-2 border-l-4 border-emerald-500 pl-3" {...props} />,
+                              hr: ({ node, ...props }) => <hr className="my-8 border-gray-100" {...props} />,
+                              strong: ({ node, ...props }) => <strong className="text-emerald-700 font-semibold" {...props} />,
+                              ul: ({ node, ...props }) => <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 list-none p-0" {...props} />,
+                              li: ({ node, ...props }) => (
                                 <li className="flex items-start gap-2 before:content-['✓'] before:text-emerald-500 before:font-bold before:text-xs before:mt-1">
                                   <span {...props} />
                                 </li>
@@ -492,7 +494,7 @@ export default function App() {
                   )}
 
                   {(isSearchingAlternatives || similarProducts.length > 0) && (
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       className="space-y-4"
@@ -530,9 +532,9 @@ export default function App() {
                                   <p className="text-xs text-gray-400">{prod.brand} • {prod.rNumber}</p>
                                 </div>
                               </div>
-                              <a 
-                                href={prod.url} 
-                                target="_blank" 
+                              <a
+                                href={prod.url}
+                                target="_blank"
                                 rel="noopener noreferrer"
                                 className="w-10 h-10 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600 hover:bg-emerald-100 transition-colors"
                               >
