@@ -184,10 +184,12 @@ export default function App() {
         const dbResponse = await fetch(`/api/products/${extractedData.rNumber}`);
         if (dbResponse.ok) {
           const product = await dbResponse.json();
-          score += 40;
-          score += 20;
-          if(product.manufacturer_name){
-          score += 20;
+          setScore(score => score + 40);
+        setScore(score => score + 20);
+        // score += 20;
+        if(product.manufacturer_name){
+          setScore(score => score + 20);
+          // score += 20;
         }
           setDbProduct(product);
 
