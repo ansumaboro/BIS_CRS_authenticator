@@ -41,6 +41,11 @@ export default function App() {
   const [error, setError] = useState(null);
   const [step, setStep] = useState('upload');
   const [searchQuery, setSearchQuery] = useState('');
+  const [markType, setMarkType] = useState('')
+  // const [standardMatch, setStandardMatch] = useState(false)
+  const [scoreStatus, setScoreStatus] = useState('')
+
+  const [score, setScore] = useState(0)
 
   const fileInputRef = useRef(null);
 
@@ -60,6 +65,21 @@ export default function App() {
       const response = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}`);
       if (response.ok) {
         const product = await response.json();
+        setScore(score => score + 40);
+        setScore(score => score + 20);
+        // score += 20;
+        if(product.manufacturer_name){
+          setScore(score => score + 20);
+          // score += 20;
+        }
+        // setScoreStatus(score > 90? "Genuine": score> 50? "Likely Genuine": "Not Genuine")
+        // if(score >= 90){
+        //   setScoreStatus("Genuine");
+        // }else if(score >=50 && score < 90){
+        //   setScoreStatus("Likely Genuine")
+        // }else{
+        //   setScoreStatus("Not Genuine");
+        // }
         setDbProduct(product);
         setExtracted({
           rNumber: product.registration_number,
@@ -70,6 +90,27 @@ export default function App() {
 
         // Use placeholder image for manual search
         setImage(`https://picsum.photos/seed/${product.brand}/800/800`);
+
+        const prefix = searchQuery.substring(0, 1)
+
+        if(prefix == 'R'){
+          setMarkType("CRS Registration");
+        }else if(prefix == 'C'){
+          setMarkType("ISI Product Certification");
+        }
+
+        // const dbStandards = await fetch(`/api/products/manual/${product.product_name}`)
+        // // console.log(dbStandards)
+        // if(dbStandards.ok) {
+        //   console.log(dbStandards)
+        //   const standards = await dbStandards.json();
+        //   // console.log("Hello")
+
+        //   if(product.is_number !== standards.is_number){
+        //     setError("Product standard doesn't match the actual standard");
+        //     return
+        //   }
+        // }
 
         explainISNumber(product.is_number);
         findSimilarProducts(product.product_name, product.brand);
@@ -121,7 +162,7 @@ export default function App() {
         contents: {
           parts: [
             imagePart,
-            { text: "Extract the BIS Registration Number (R-number, e.g., R-41000001), IS Number (e.g., IS 13252), Product Name, and Brand from this product label. Return in JSON format with keys: rNumber, isNumber, productName, brand. If not found, use null." }
+            { text: "Extract the BIS Registration Number (R-number, e.g., R-41000001), IS Number (e.g., IS 13252), Product Name, and Brand from this product label. Return in JSON format with keys: rNumber, lNumber, hNumber, isNumber, productName, brand. If not found, use null." }
           ]
         },
         config: { responseMimeType: "application/json" }
@@ -130,13 +171,36 @@ export default function App() {
       const extractedData = JSON.parse(extractionResponse.text);
       setExtracted(extractedData);
 
+      if(extractedData.rNumber){
+        setMarkType("CRS Registration");
+      }else if(extractedData.lNumber){
+        setMarkType("ISI Product Certification");
+      }else if(extractedData.hNumber){
+        setMarkType("Hallmarking");
+      }
+
       if (extractedData.rNumber) {
         // 2. Check Database
         const dbResponse = await fetch(`/api/products/${extractedData.rNumber}`);
         if (dbResponse.ok) {
           const product = await dbResponse.json();
+          score += 40;
+          score += 20;
+          if(product.manufacturer_name){
+          score += 20;
+        }
           setDbProduct(product);
 
+          // const dbStandards = await fetch(`/api/products/manual/${product.product_name}`)
+
+          // if(dbStandards.ok) {
+          //   const standards = await dbStandards.json();
+
+          //   if(product.is_number !== standards.is_number){
+          //     setError("Product standard doesn't match the actual standard");
+          //     return
+          //   }
+          // }
           // 3. Explain IS Number
           explainISNumber(product.is_number);
 
@@ -373,6 +437,10 @@ export default function App() {
                     <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Extracted Data</p>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-500">Scheme Type</span>
+                        <span className="font-mono text-xs font-bold bg-gray-100 px-2 py-1 rounded">{markType == '' ? 'N/A' : markType}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
                         <span className="text-xs text-gray-500">R-Number</span>
                         <span className="font-mono text-xs font-bold bg-gray-100 px-2 py-1 rounded">{extracted?.rNumber || 'N/A'}</span>
                       </div>
@@ -428,6 +496,24 @@ export default function App() {
                           <p className="text-sm text-gray-600 leading-relaxed">{dbProduct.scope_of_license}</p>
                         </div> */}
                       </div>
+                    </motion.div>
+                  )}
+
+                  {dbProduct && (
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden"
+                    >
+                        <div className="flex justify-between items-start p-2 px-4">
+                          <div>
+                            <h2 className="text-2xl font-bold">Verification Score</h2>
+                            {/* <p className="text-black">{scoreStatus}</p> */}
+                          </div>
+                          <div className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full  font-bold uppercase tracking-widest">
+                            {score}/100
+                          </div>
+                        </div>
                     </motion.div>
                   )}
 

@@ -38,3 +38,19 @@ export const searchProducts = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const getISByProductName = async (req, res) => {
+  console.log(product_name)
+  const { product_name } = req.params;
+  try {
+    const [rows] = await db.query("SELECT * FROM isstandards WHERE product_name = ?", [product_name]);
+    if (rows.length > 0) {
+      res.json(rows[0]);
+    } else {
+      res.status(404).json({ error: "Standard not found in database" });
+    }
+  } catch (error) {
+    console.error("Error fetching product:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
