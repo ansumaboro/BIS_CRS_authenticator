@@ -162,7 +162,7 @@ export default function App() {
     try {
       const response = await genAI.models.generateContent({
         model: "gemini-3-flash-preview",
-        contents: `Explain what the Indian Standard ${isNumber} says, what it is for, and its key standards in a concise manner.`
+        contents: `Explain what the Indian Standard ${isNumber} says, what it is for, and its key standards in a concise manner. Also in the bottom line for each verified standard, provide one simple safety explanation derived form the BIS standard.`
       });
       setIsExplanation(response.text);
     } catch (err) {

@@ -182,6 +182,19 @@ export async function initDb() {
           "02-02-2027",
           "click here to view",
           "RR"
+        ],
+        [
+          "R-41013323",
+          "Chicony Power Technology(Chongqing) Co., Ltd",
+          "NO. 98, JIUJIANG ROAD, SHUANGFU STREET, JIANGJIN DISTRICT, CHONGQING, CHINA, CHONGQING, 402247",
+          "China",
+          "Power Adaptors for IT Equipments",
+          "IS 13252(Part 1):2010/ IEC 60950-1 : 2005",
+          "08-04-2015",
+          "Registered",
+          "07-04-2030",
+          "click here to view",
+          "hp,HP"
         ]
       ];
 
